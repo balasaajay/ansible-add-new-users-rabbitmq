@@ -1,11 +1,13 @@
 # ansible-add-new-users-rabbitmq
 Run this playbook to add new users to rabbitmq using APIs
 
-Before running this playbook, make sure rabbitmq's management port is open (default is 15672).
+Make sure rabbitmq's management port is open (default is 15672).
 
 Command to run the playbook
 
-```ansible-playbook add_user_rabbitmq.yml --extra-vars "vhost_name=$vhost_name user_new=$user_new password_new=$password_new rabbitmq_url=http://localhost:15762" -i inventory```
+```ansible-playbook add_user_rabbitmq.yml --extra-vars "vhost_name=sensu user_new=sensu password_new=sensu123 rabbitmq_url=http://localhost:15762"```
+
+In this command, assign values as appropriate to vhost_name, user_new, password_new,rabbitmq_url variables.
 
 #What this does?
 
