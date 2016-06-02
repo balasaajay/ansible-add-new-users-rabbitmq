@@ -1,7 +1,8 @@
 ---
 - hosts: "hostname" #hostname or IP or group
   vars:
-     send_body:
+      admin_creds: Z3Vlc3Q6Z3Vlc3Q= 
+      send_body:
        password: "{{ password_new }}"
        tags: "(None)"
        _hack: null
@@ -14,7 +15,7 @@
         url: "{{ rabbitmq_url }}/api/vhosts"
         method: GET
         HEADER_Content-Type: "application/json"
-        HEADER_Authorization: "Basic Z3Vlc3Q6Z3Vlc3Q="
+        HEADER_Authorization: "Basic {{ admin_creds }}"
         HEADER_Accept: "application/json"
         return_content: yes
         validate_certs: no
@@ -30,7 +31,7 @@
         url: "{{ rabbitmq_url }}/api/users"
         method: GET
         HEADER_Content-Type: "application/json"
-        HEADER_Authorization: "Basic Z3Vlc3Q6Z3Vlc3Q="
+        HEADER_Authorization: "Basic {{ admin_creds }}"
         HEADER_Accept: "application/json"
         return_content: yes
         validate_certs: no 
@@ -46,7 +47,7 @@
         url: "{{ rabbitmq_url }}/api/vhosts/%2F{{ vhost_name }}"
         method: PUT
         HEADER_Content-Type: "application/json"
-        HEADER_Authorization: "Basic Z3Vlc3Q6Z3Vlc3Q="
+        HEADER_Authorization: "Basic {{ admin_creds }}"
         HEADER_Accept: "application/json"
         return_content: yes
         validate_certs: no
@@ -58,7 +59,7 @@
         url: "{{ rabbitmq_url }}/api/vhosts"
         method: GET
         HEADER_Content-Type: "application/json"
-        HEADER_Authorization: "Basic Z3Vlc3Q6Z3Vlc3Q="
+        HEADER_Authorization: "Basic {{ admin_creds }}"
         HEADER_Accept: "application/json"
         return_content: yes
         validate_certs: no
@@ -72,7 +73,7 @@
         url: "{{ rabbitmq_url }}/api/users/{{ user_new }}"
         method: PUT
         HEADER_Content-Type: "application/json"
-        HEADER_Authorization: "Basic Z3Vlc3Q6Z3Vlc3Q="
+        HEADER_Authorization: "Basic {{ admin_creds }}"
         HEADER_Accept: "application/json"
         return_content: yes
         validate_certs: no
@@ -87,7 +88,7 @@
         url: "{{ rabbitmq_url }}/api/users"
         method: GET
         HEADER_Content-Type: "application/json"
-        HEADER_Authorization: "Basic Z3Vlc3Q6Z3Vlc3Q="
+        HEADER_Authorization: "Basic {{ admin_creds }}"
         HEADER_Accept: "application/json"
         return_content: yes
         validate_certs: no 
@@ -101,7 +102,7 @@
         url: "{{ rabbitmq_url }}/api/permissions/%2F{{ vhost_name }}/{{ user_new }}"
         method: PUT
         HEADER_Content-Type: "application/json"
-        HEADER_Authorization: "Basic Z3Vlc3Q6Z3Vlc3Q="
+        HEADER_Authorization: "Basic {{ admin_creds }}"
         HEADER_Accept: "application/json"
         return_content: yes
         validate_certs: no
@@ -116,7 +117,7 @@
         url: "{{ rabbitmq_url }}/api/users/{{ user_new }}/permissions"
         method: GET
         HEADER_Content-Type: "application/json"
-        HEADER_Authorization: "Basic Z3Vlc3Q6Z3Vlc3Q="
+        HEADER_Authorization: "Basic {{ admin_creds }}"
         HEADER_Accept: "application/json"
         return_content: yes
         validate_certs: no 
