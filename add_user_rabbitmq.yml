@@ -1,0 +1,125 @@
+---
+- hosts: "hostname" #hostname or IP or group
+  vars:
+     send_body:
+       password: "{{ password_new }}"
+       tags: "(None)"
+       _hack: null
+  tasks:
+    - name: install httplib2
+      pip: name=httplib2 extra_args="--user"
+
+    - name: Verify whether requested vhost is present or not
+      uri:
+        url: "{{ rabbitmq_url }}/api/vhosts"
+        method: GET
+        HEADER_Content-Type: "application/json"
+        HEADER_Authorization: "Basic Z3Vlc3Q6Z3Vlc3Q="
+        HEADER_Accept: "application/json"
+        return_content: yes
+        validate_certs: no
+        status_code: [200, 201]
+      register: result1
+    - debug: msg="ERROR:'{{ vhost_name }}' exists! Please enter another 'vhost_name'"
+      when: "'{{ vhost_name }}' in result1.content"
+    - action: fail
+      when: "'{{ vhost_name }}' in result1.content"
+
+    - name: Verify whether requested user is present or not
+      uri:
+        url: "{{ rabbitmq_url }}/api/users"
+        method: GET
+        HEADER_Content-Type: "application/json"
+        HEADER_Authorization: "Basic Z3Vlc3Q6Z3Vlc3Q="
+        HEADER_Accept: "application/json"
+        return_content: yes
+        validate_certs: no 
+        status_code: [200, 201, 204]
+      register: result2
+    - debug: msg="ERROR:'{{ user_new }}' exists! Please enter another 'user_new'"
+      when: "'{{ user_new }}' in result1.content"
+    - action: fail
+      when: "'{{ user_new }}' in result2.content"
+
+    - name: Create vhosts 
+      uri:
+        url: "{{ rabbitmq_url }}/api/vhosts/%2F{{ vhost_name }}"
+        method: PUT
+        HEADER_Content-Type: "application/json"
+        HEADER_Authorization: "Basic Z3Vlc3Q6Z3Vlc3Q="
+        HEADER_Accept: "application/json"
+        return_content: yes
+        validate_certs: no
+        status_code: [200, 201, 204]
+      register: result
+
+    - name: Get list of vhosts
+      uri:
+        url: "{{ rabbitmq_url }}/api/vhosts"
+        method: GET
+        HEADER_Content-Type: "application/json"
+        HEADER_Authorization: "Basic Z3Vlc3Q6Z3Vlc3Q="
+        HEADER_Accept: "application/json"
+        return_content: yes
+        validate_certs: no
+        status_code: [200, 201]
+      register: result3
+    - action: fail
+      when: "'{{ vhost_name }}' not in result3.content"
+    
+    - name: Create user 
+      uri:
+        url: "{{ rabbitmq_url }}/api/users/{{ user_new }}"
+        method: PUT
+        HEADER_Content-Type: "application/json"
+        HEADER_Authorization: "Basic Z3Vlc3Q6Z3Vlc3Q="
+        HEADER_Accept: "application/json"
+        return_content: yes
+        validate_certs: no
+        body: "{{ send_body | to_json }}"
+        body_format: json
+        status_code: [200, 201, 204]
+      register: result
+    - debug: var=result.stdout_lines
+
+    - name: Get users
+      uri:
+        url: "{{ rabbitmq_url }}/api/users"
+        method: GET
+        HEADER_Content-Type: "application/json"
+        HEADER_Authorization: "Basic Z3Vlc3Q6Z3Vlc3Q="
+        HEADER_Accept: "application/json"
+        return_content: yes
+        validate_certs: no 
+        status_code: [200, 201, 204]
+      register: result4
+    - action: fail
+      when: "'{{ user_new }}' not in result4.content"
+
+    - name: Set vhost user permissions
+      uri:
+        url: "{{ rabbitmq_url }}/api/permissions/%2F{{ vhost_name }}/{{ user_new }}"
+        method: PUT
+        HEADER_Content-Type: "application/json"
+        HEADER_Authorization: "Basic Z3Vlc3Q6Z3Vlc3Q="
+        HEADER_Accept: "application/json"
+        return_content: yes
+        validate_certs: no
+        body: '{"scope":"client","configure":".*","write":".*","read":".*"}'
+        status_code: [200, 201, 204]
+        body_format: json
+      register: result
+    - debug: var=result.stdout_lines
+
+    - name: Get user permissions
+      uri:
+        url: "{{ rabbitmq_url }}/api/users/{{ user_new }}/permissions"
+        method: GET
+        HEADER_Content-Type: "application/json"
+        HEADER_Authorization: "Basic Z3Vlc3Q6Z3Vlc3Q="
+        HEADER_Accept: "application/json"
+        return_content: yes
+        validate_certs: no 
+        status_code: [200, 201, 204]
+      register: result
+    - debug: var=result.stdout_lines
