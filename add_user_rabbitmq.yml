@@ -12,35 +12,25 @@
 
     - name: Verify whether requested vhost is present or not
       uri:
-        url: "{{ rabbitmq_url }}/api/vhosts"
+        url: "{{ rabbitmq_url }}/api/vhosts/%2F{{ vhost_name }}"
         method: GET
         HEADER_Content-Type: "application/json"
         HEADER_Authorization: "Basic {{ admin_creds }}"
         HEADER_Accept: "application/json"
         return_content: yes
         validate_certs: no
-        status_code: [200, 201]
-      register: result1
-    - debug: msg="ERROR:'{{ vhost_name }}' exists! Please enter another 'vhost_name'"
-      when: "'{{ vhost_name }}' in result1.content"
-    - action: fail
-      when: "'{{ vhost_name }}' in result1.content"
+        status_code: [404]
 
     - name: Verify whether requested user is present or not
       uri:
-        url: "{{ rabbitmq_url }}/api/users"
+        url: "{{ rabbitmq_url }}/api/users/{{ user_new }}"
         method: GET
         HEADER_Content-Type: "application/json"
         HEADER_Authorization: "Basic {{ admin_creds }}"
         HEADER_Accept: "application/json"
         return_content: yes
         validate_certs: no 
-        status_code: [200, 201, 204]
-      register: result2
-    - debug: msg="ERROR:'{{ user_new }}' exists! Please enter another 'user_new'"
-      when: "'{{ user_new }}' in result1.content"
-    - action: fail
-      when: "'{{ user_new }}' in result2.content"
+        status_code: [404]
 
     - name: Create vhosts 
       uri:
